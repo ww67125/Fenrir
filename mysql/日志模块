@@ -1,0 +1,23 @@
+WAL技术(Write-Ahead Logging)
+先写日志，等空闲时再写进磁盘
+
+redolog
+Innodb引擎专有日志，有记录更新时，先记录到日志再更新内存,适当的时候写入磁盘
+redo log保证数据库异常重启记录不丢失 （crash-safe）
+物理日志 （记录数据页上的修改）
+循环写入，空间固定
+建议设置每次事务日志持久化
+
+binlog
+server层特有
+逻辑日志(记录语句逻辑)
+追加写入，不会覆盖之前日志
+建议设置每次事务日志持久化
+
+两阶段提交
+保证两个日志逻辑一致
+数据更新到内存 》》写入redolog（prepare状态）
+》》写入binlog 》》 提交事务 改变状态redolog（commit状态）
+
+general_log
+??

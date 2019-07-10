@@ -1,0 +1,19 @@
+装饰器不在原有类的基础上更改，实现与被装饰的对象同一接口，重写方法，
+在内部调用被装饰对象同名方法，根据自己的需求拓展功能。
+例
+	
+interface1
+	method
+class implements interface1
+	@ov
+	method
+Decorator implements interface1
+
+	@ov
+	method
+
+	method1
+	class.method
+	method2
+
+

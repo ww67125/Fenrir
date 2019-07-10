@@ -1,0 +1,45 @@
+导入
+impdp jczyk/jczyk DIRECTORY=data DUMPFILE=jczyk180213.dmp logfile=impdb.log FULL=y;
+
+导入重命名
+impdp workplatform/orcl@192.168.1.130/sinofont DUMPFILE=WORKPLATFORMTEST0615.DMP DIRECTORY=DATA_PUMP_DIR  LOGFILE=workplatform20170607.log REMAP_SCHEMA=workplatformtest1:workplatform full=y ignore=y
+		导之前                       导之后
+
+
+数据库文件误删操作
+alter database open
+查看问题
+
+alter database datafile '/data/app/oradata/ora237/users01.dbf' offline drop;
+删除关联
+
+drop tablespace 表空间名称 including contents and datafiles cascade constraint;
+删除表空间
+
+关联插入
+insert into T_MIDENCOD_WORD_COPY (select * from T_MIDENCOD_WORD a where exists (select 1 from T_TEMPENCOD_WORD_COPY  b where b.midencodid=a.id))
+
+单行去重
+insert into T_CHAR_CCC select * from T_CHAR_COPY a where ID=(select min(ID) from T_CHAR_COPY where INSEGETLETT=a.INSEGETLETT)
+
+删除用户级联
+drop user 用户 cascade;
+
+导出数据库
+expdp username/pwd directory=mydb logfile=test.log dumpfile=xxx.dmp schemas=username
+
+修改序列初始值
+ALTER SEQUENCE name INCREMENT BY 1000;
+
+SELECT name.NEXTVAL FROM DUAL;
+
+ALTER SEQUENCE name  INCREMENT BY 1; 
+
+回滚
+select systimestamp from T_TASK_FORRENGONGFENLEI
+
+select * from 表名as of timestamp to_date('2016-10-24 10:02:55','YYYY-MM-DD HH24:MI:SS')
+
+flashback table T_TASK_FORRENGONGFENLEI of timestamp to_date('2018-08-16 15:37:21','YYYY-MM-DD HH24:MI:SS')
+
+alter table T_TASK_FORRENGONGFENLEI enable row movement

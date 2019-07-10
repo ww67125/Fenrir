@@ -1,0 +1,23 @@
+显示mysql当前链接
+show processlist
+
+初始化连接资源
+mysql_reset_connection
+
+查询数据表索引
+show index from t1
+
+重建索引
+repair table t1 quick
+
+查看系统变量
+show variables like '变量名'
+
+查询持续时间超过60s的事务
+select * from information_schema.innodb_trx where time_to_sec(timediff(now(),trx_started))>60
+
+单语句执行最大时长（业务连接时？？）
+set max_execution_time
+
+可以重建表所有索引
+alter table t1 engine=InnoDB

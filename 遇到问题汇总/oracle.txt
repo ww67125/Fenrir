@@ -1,0 +1,6 @@
+Oracle
+varchar2 和 char 都不可以存储空字符，默认存空字符为null
+varchar可以存入空字符
+
+默认事务隔离级别
+读提交

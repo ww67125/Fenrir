@@ -1,0 +1,20 @@
+﻿SpringSecurity
+
+remember 页面添加remember-me 控件
+config添加
+注入userdetail和datasource
+.rememberMe()
+              .tokenValiditySeconds(1209600)
+              //指定记住登录信息所使用的数据源
+              .tokenRepository(tokenRepository())//code4
+              .userDetailsService(myUserDetailsService)
+
+              @Bean
+              public JdbcTokenRepositoryImpl tokenRepository(){
+                  JdbcTokenRepositoryImpl j=new JdbcTokenRepositoryImpl();
+                  j.setDataSource(dataSource);
+                  //自动建表，运行一次程序注释掉
+          //        j.setCreateTableOnStartup(true);
+                  return j;
+              }
+页面获取security用户名${SPRING_SECURITY_CONTEXT.authentication.principal.username}

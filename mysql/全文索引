@@ -1,0 +1,73 @@
+全文检索5.7以上支持全文检索中文分词
+
+查找所有包含全文索引的表
+SELECT distinct table_schema,table_name FROM information_schema.STATISTICS WHERE index_type='fulltext';
+查询innodb全文索引参数
+SHOW VARIABLES LIKE 'innodb_ft%';
+
+n-gram
+
+创建索引ddl
+alter table t1 add fulltext index indexname(column) with parser ngram;
+or
+create fulltext index indexname on t1(column) with parser ngram;
+（创建时添加读锁）
+
+全局变量 ngram_token_size 决定ngram中分词大小，默认值2。(连续n个字分词,例：生日快乐，分词为 生日 日快 快乐)
+值越小，占用空间越小，查询正好等于分词大小，速度更快
+
+因为有了ngram_token_size，所以innodb_ft_min_token_size和innodb_ft_max_token_size将不适用于n-gram
+
+停用词
+在停用词表（stopword）中的词,将不会加到全文索引中
+InnoDB目前内建的停词可以从information_schema.INNODB_FT_DEFAULT_STOPWORD读取
+指定自己的停用词表
+SET GLOBAL innodb_ft_server_stopword_table = 'schema/table';
+
+显示指定全文检索表源
+SET GLOBAL innodb_ft_aux_table="schema/table";
+
+查询全文索引中建成的词
+SELECT * FROM INFORMATION_SCHEMA.INNODB_FT_INDEX_CACHE;
+or
+SELECT * FROM INFORMATION_SCHEMA.INNODB_FT_TABLE_TABLE;
+
+查询模式
+自然语言模式（NATURAL LANGUAGE MODE)
+查询的文本被转换为分词的并集
+例： 查询生日快乐
+SELECT * FROM t1 WHERE MATCH (column) AGAINST ('生日快乐' IN NATURAL LANGUAGE MODE)
+
+查询单词会被按分词器拆分 生日 日快 快乐
+然后分别查询包含 生日 日快 快乐的内容 返回结果。
+
+布尔模式（BOOLEAN MODE）
+文本查询转化为短语查询
+SELECT * FROM t1 WHERE MATCH (column) AGAINST ('生日快乐' IN BOOLEAN MODE)
+
+拓展模式
+进行两次查询，第一次，查出用户给定的关键词对应的记录；第二次，用第一次查出的结果里的关键词，再去查一次，把两次的结果返回给用户
+SELECT * FROM t1 WHERE MATCH (column) AGAINST ('生日快乐' with query expansion)
+
+符号使用
++存在
+-不存在
+*通配符 不能出现在句首
+<提高相关性
+>降低相关性
+""将内容作为短语查询
+
+通配符查询
+if（查询单词长度小于分词大小，返回结果返回所有以这个词为前缀的词）
+SELECT * FROM t1 WHERE MATCH (column) AGAINST ('生*' IN BOOLEAN MODE)
+else
+查询转换为一个短语，通配符被忽略
+SELECT * FROM t1 WHERE MATCH (column) AGAINST ('生日快*' IN BOOLEAN MODE)  （生日快*被转换为：生日 日快）
+
+短语查询
+按照分词器分词，保证查询顺序，作为短语查询
+SELECT * FROM t1 WHERE MATCH (column) AGAINST ('"生日快乐"' IN BOOLEAN MODE)
+
+
+将全文检索功能近似like
+将分词大小设为1，然后使用短语查询。

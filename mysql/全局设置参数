@@ -1,0 +1,16 @@
+连接空闲等待时长
+wait_timeout (default=8h)
+
+查询缓存
+query_cache_type
+(demand 默认不使用查询缓存)
+(mysql8.0取消)
+
+每次事务redolog持久化
+innodb_flush_log_at_trx_commit=1
+
+每次事务binlog持久化
+sync_binlog=1
+
+事务隔离级别
+transcation-isolation
