@@ -6,6 +6,9 @@ SELECT distinct table_schema,table_name FROM information_schema.STATISTICS WHERE
 SHOW VARIABLES LIKE 'innodb_ft%';
 
 n-gram
+设置中文索引分词大小 mysql配置文件
+[mysqld]
+ngram_token_size=1(default=2)
 
 创建索引ddl
 alter table t1 add fulltext index indexname(column) with parser ngram;
@@ -71,3 +74,4 @@ SELECT * FROM t1 WHERE MATCH (column) AGAINST ('"生日快乐"' IN BOOLEAN MODE)
 
 将全文检索功能近似like
 将分词大小设为1，然后使用短语查询。
+分词越大，约占用空间

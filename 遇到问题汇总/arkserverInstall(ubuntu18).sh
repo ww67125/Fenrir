@@ -22,11 +22,11 @@ cd arkserver
 wget -O linuxgsm.sh https://linuxgsm.sh && chmod +x linuxgsm.sh && bash linuxgsm.sh arkserver
 ./arkserver install
 read -p "输入服务器密码:" serverpass
-sed -i 's/ServerPassword=*/ServerPassword=${serverpass}/g' /home/arkserveradmin/arkserver/serverfiles/ShooterGame/Saved/Config/LinuxServer/GameUserSettings.ini
+sed -i 's/ServerPassword=.*/ServerPassword=${serverpass}/g' /home/arkserveradmin/arkserver/serverfiles/ShooterGame/Saved/Config/LinuxServer/GameUserSettings.ini
 read -p "输入管理员密码:" adminpass
-sed -i 's/ServerAdminPassword=*/ServerAdminPassword=${adminpass}/g' /home/arkserveradmin/arkserver/serverfiles/ShooterGame/Saved/Config/LinuxServer/GameUserSettings.ini
+sed -i 's/ServerAdminPassword=.*/ServerAdminPassword=${adminpass}/g' /home/arkserveradmin/arkserver/serverfiles/ShooterGame/Saved/Config/LinuxServer/GameUserSettings.ini
 read -p "输入服务名称:" servername
-sed -i 's/SessionName=*/SessionName=${servername}/g' /home/arkserveradmin/arkserver/serverfiles/ShooterGame/Saved/Config/LinuxServer/GameUserSettings.ini
+sed -i 's/SessionName=.*/SessionName=${servername}/g' /home/arkserveradmin/arkserver/serverfiles/ShooterGame/Saved/Config/LinuxServer/GameUserSettings.ini
 
 echo "fn_parms(){
 parms="\"${defaultmap}?AltSaveDirectoryName=${defaultmap}?listen?MultiHome=${ip}?MaxPlayers=${maxplayers}?QueryPort=${queryport}?RCONPort=${rconport}?Port=${port}?bRawSockets -automanagedmods\""}" >> /home/arkserveradmin/arkserver/lgsm/config-lgsm/arkserver/arkserver.cfg
