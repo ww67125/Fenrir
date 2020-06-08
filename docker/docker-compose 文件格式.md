@@ -47,7 +47,7 @@ services:
       - /home/john/data/fzzx/raw_data:/usr/local/tomcat/dataapps/ROOT/data
       - /home/john:/home/john
       - /root/dockertest/updata:/root/updata
-    #可以使用服务名连接其他服务
+    #可以使用服务名连接其他服务（就是在/etc/hosts文件里添加了别的机器的地址）
     links:
       - db
 
