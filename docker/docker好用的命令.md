@@ -15,3 +15,6 @@ build 重新构建
 rm -v 删除停止容器
 down 停止并删除
 logs -f servicename 查看指定服务日志
+
+docker inspect container 查看容器配置信息和运行时状态
+docker stats container 监控容器性能

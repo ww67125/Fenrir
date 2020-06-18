@@ -25,6 +25,7 @@ create fulltext index indexname on t1(column) with parser ngram;
 在停用词表（stopword）中的词,将不会加到全文索引中
 InnoDB目前内建的停词可以从information_schema.INNODB_FT_DEFAULT_STOPWORD读取
 指定自己的停用词表
+停止词表就是单字段的一张表 字段长度要大于分词长度
 SET GLOBAL innodb_ft_server_stopword_table = 'schema/table';
 
 显示指定全文检索表源
@@ -33,7 +34,7 @@ SET GLOBAL innodb_ft_aux_table="schema/table";
 查询全文索引中建成的词
 SELECT * FROM INFORMATION_SCHEMA.INNODB_FT_INDEX_CACHE;
 or
-SELECT * FROM INFORMATION_SCHEMA.INNODB_FT_TABLE_TABLE;
+SELECT * FROM INFORMATION_SCHEMA.INNODB_FT_INDEX_TABLE;
 
 查询模式
 自然语言模式（NATURAL LANGUAGE MODE)
@@ -74,4 +75,24 @@ SELECT * FROM t1 WHERE MATCH (column) AGAINST ('"生日快乐"' IN BOOLEAN MODE)
 
 将全文检索功能近似like
 将分词大小设为1，然后使用短语查询。
-分词越大，约占用空间
+分词越大，越占用空间
+
+在有全文索引的表进行DML操作
+1.插入记录提交事务时回对全文索引上的列进行分词，存储到innodb_ft_index_cache中，最后批量更新到innodb_ft_index_table
+2.提交删除数据的事务，只会删除innodb_ft_index_cache中的数据，对于innodb_ft_index_table中要被删除的记录会记录 fts document id，并保存在delete auxiliary table 中，可以通过optimize table 再手动删除。
+3.查找操作 先根据检索词查到fts_doc_id，首先读取delete表中的doc_id做过滤，然后更具doc_id找到相应ilu根据相关性返回
+
+全文索引相关表
+innodb_ft_delete:保存的删除的全索引doc_id，避免dml操作时重组索引，optimize table时才会更新重组全文索引。（建议定时opt）
+innodb_ft_being_delete:opt操作时的临时表
+INNODB_FT_INDEX_CACHE: 新插入数据时保存新的全文索引，避免insert时导致索引重组，opt或关闭服务时，超过innodb_ft_cache_size或innodb_ft_total_cache_size的限制就会合并到主索引表（INNODB_FT_Index_TABLE）
+innodb_ft_config:索引刷新和停止词等信息（？？我没看到）
+
+全文索引相关参数
+innodb_ft_aux_table: 设置调试表，只有设置这个参数，innodb_ft_delete和innodb_ft_index_cache才能正常显示信息
+ngram_token_size：中文分词长度
+innodb_ft_server_stopword_table / innodb_ft_user_stopword_table : 设置停止词表，后者优先级更高，还要看是否开启了停用词参数innodb_ft_enable_stopword = on
+innodb_ft_min_token_size和innodb_ft_max_token_size:使用ngram模式时失效，同样时分词长度
+innodb_ft_sort_pll_degree:创建全文索引时并行度
+innodb_ft_cache_szie/innodb_ft_total_cache_size：前者是每个表全索引内存大小，后者是总的全文索引内存大小，如果超过了total_size则强制同步被取消（不懂）
+innodb_optimize_fulltext_only:opt操作时，只有优化全文索引 ，set 值=1
