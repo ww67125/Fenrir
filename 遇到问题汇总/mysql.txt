@@ -8,3 +8,9 @@ mysq只能再配置文件中更改数据路径和临时文件路径 并需要将
   3. 将这个大字段从表中拆分成单独一张表，然后将数据拆分，一条拆成多条
 
 2. mysql 最大允许sql的内容大小为1G，实际上没有超过这个值就会崩溃，是不是应该适当调小max_allowed_packet的大小,调成最大值并不好？
+
+3. 查询重复数据的思路 使用重复字段进行group by 然后having count >1
+使用聚合子句作为条件时 想进行更新删除操作应该以原始表套一层查询 比如 id in (select id from(select min(id) as id from table group by field having count(field)>1) as t)
+
+4.简单去重语句思路 按重复字段只做group by聚合所有数据 查询min（id）或max（id）这样就会查出所有不重复数据 然后使用id not in 删除其他重复数据 比如
+delete from table where id not in (select id from (select min(id) from table group by field) as t);
