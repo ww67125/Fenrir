@@ -14,3 +14,6 @@ mysq只能再配置文件中更改数据路径和临时文件路径 并需要将
 
 4.简单去重语句思路 按重复字段只做group by聚合所有数据 查询min（id）或max（id）这样就会查出所有不重复数据 然后使用id not in 删除其他重复数据 比如
 delete from table where id not in (select id from (select min(id) from table group by field) as t);
+
+5. 当使用on duplicate key update 这样的语句时，更新操作会让last_insert_id()等于0
+解决办法就是 写成 on duplicate key update id=last_insert_id(id) 使用 select @@IDENTITY 查询可以查出更新行id
